@@ -1,3 +1,5 @@
+📄 Automação de Resumos de Artigos com n8n
+
 🚀 O que o fluxo faz
 Disparo agendado a cada 10 minutos (Schedule Trigger).
 
