@@ -1,0 +1,400 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "119z4-MxmBcCNa6VyZgfIOfabtefkLcCv3TrKKt3K6zM",
+          "mode": "list",
+          "cachedResultName": "Resumo N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/119z4-MxmBcCNa6VyZgfIOfabtefkLcCv3TrKKt3K6zM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 723849903,
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/119z4-MxmBcCNa6VyZgfIOfabtefkLcCv3TrKKt3K6zM/edit#gid=723849903"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3ea5c76d-9b04-45ff-bf0c-eb1d33c2d4e6",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1qaJI7DgO3hLtCqY",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6b903fb7-3061-4ac3-b95e-64cfe6661030",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['Link do Artigo'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "3348e6e8-8b02-46e0-becb-14f847f7dc4f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "textoExtraido",
+              "cssSelector": "p",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "c220d152-317d-4348-b7d1-cc26bd916d59",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7502a4ca-5f94-4191-88af-a69f992e51c2",
+              "name": "textoCompleto",
+              "value": "={{ $json[\"textoExtraido\"].join(\"\\n\\n\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "a8ffaa02-e19f-4f1a-a561-749bc78c8acc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Resuma o seguinte texto em 5 tópicos objetivos e claros, mantendo o conteúdo em português do Brasil: {{ $json.textoCompleto }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "e49da207-265e-40fb-bc01-c06b593239ed",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "qmSmqHkFCOsLNXwz",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json.Email }}",
+        "subject": "=Aqui está resumo do link:  {{ $('Get row(s) in sheet').item.json['Link do Artigo'] }}",
+        "emailType": "text",
+        "message": "={{ $json.message.content }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1571.410285714286,
+        0
+      ],
+      "id": "daa958ef-825e-42e5-8ab4-abe71954d61c",
+      "name": "Send a message",
+      "webhookId": "951965a9-862c-4c4c-949d-e7224e82f464",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Kh8dyVXv4TdCjm17",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "119z4-MxmBcCNa6VyZgfIOfabtefkLcCv3TrKKt3K6zM",
+          "mode": "list",
+          "cachedResultName": "Resumo N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/119z4-MxmBcCNa6VyZgfIOfabtefkLcCv3TrKKt3K6zM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 723849903,
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/119z4-MxmBcCNa6VyZgfIOfabtefkLcCv3TrKKt3K6zM/edit#gid=723849903"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Link do Artigo": "={{ $('Get row(s) in sheet').item.json['Link do Artigo'] }}",
+            "Status": "Resumo já enviado"
+          },
+          "matchingColumns": [
+            "Link do Artigo"
+          ],
+          "schema": [
+            {
+              "id": "Link do Artigo",
+              "displayName": "Link do Artigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1760,
+        0
+      ],
+      "id": "e08c33f6-b6a5-4892-ad00-f741d410a3ad",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1qaJI7DgO3hLtCqY",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f12d7f72-4ae7-42ae-91cd-b2f44579b828",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1b661840-f59d-446d-ba8b-d1112be03433",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ed4a8b64-0f2a-412c-8896-562001f49c24",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1eda7c6ac063555d491416e4a8d07610c3df17f007e13cd261ae435a0d6f28ee"
+  },
+  "id": "FIARdUReiH3Z9505",
+  "tags": []
+}
