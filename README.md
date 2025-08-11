@@ -1,2 +1,86 @@
-# Automação de Resumos de Artigos com n8n
-Este fluxo do n8n automatiza a leitura de links em uma planilha do Google Sheets, extrai o texto do artigo, gera um resumo usando IA e envia por e-mail para o destinatário configurado — tudo de forma totalmente automática.  🚀 O que o fluxo faz Disparo agendado a cada 10 minutos (Schedule Trigger).  Leitura de linhas do Google Sheets contendo:  Link do Artigo  Email  Status  Verificação de status — só processa se o campo Status estiver vazio.  Requisição HTTP para abrir o link do artigo.  Extração de conteúdo HTML (parágrafos <p>).  Concatenação do texto em um único campo.  Geração de resumo usando o modelo gpt-4o-mini da OpenAI:  5 tópicos objetivos em português.  Envio por e-mail usando Gmail com:  Assunto: "Aqui está resumo do link: {link}"  Corpo: resumo gerado  Atualização no Google Sheets marcando Status como "Resumo já enviado".  📋 Pré-requisitos Conta no Google Sheets e planilha configurada com colunas:  Link do Artigo  Email  Status  Conta no Gmail com OAuth2 configurado no n8n.  Credenciais da OpenAI API (ou acesso ao modelo pelo n8n).  Instância do n8n rodando (local ou em nuvem).  ⚙️ Estrutura dos nós principais Schedule Trigger → Executa a cada 10 minutos.  Google Sheets (Get row(s)) → Busca linhas da planilha.  If → Filtra linhas sem Status.  HTTP Request → Acessa o link do artigo.  HTML → Extrai texto dos parágrafos.  Set (Edit Fields) → Junta o texto extraído.  OpenAI (Message a model) → Gera resumo.  Gmail (Send a message) → Envia resumo por e-mail.  Google Sheets (Update row) → Atualiza status.  🧠 Observações O seletor CSS "p" na etapa HTML pega todos os parágrafos; ajuste caso precise de partes específicas do artigo.  O modelo gpt-4o-mini gera respostas rápidas e econômicas; você pode trocar por outro modelo mais detalhado.  O envio de e-mail é texto simples; pode ser adaptado para HTML se quiser formatação.  Certifique-se de que o campo Email está correto na planilha para evitar falhas no envio.  📎 Exemplo de uso Planilha inicial:  Link do Artigo	Email	Status https://meusite.com/artigo1	teste@email.com	 https://meusite.com/artigo2	outro@email.com	  Após execução, a coluna Status será preenchida:  Link do Artigo	Email	Status https://meusite.com/artigo1	teste@email.com	Resumo já enviado https://meusite.com/artigo2	outro@email.com	Resumo já enviado
+🚀 O que o fluxo faz
+Disparo agendado a cada 10 minutos (Schedule Trigger).
+
+Leitura de linhas do Google Sheets contendo:
+
+Link do Artigo
+
+Email
+
+Status
+
+Verificação de status — só processa se o campo Status estiver vazio.
+
+Requisição HTTP para abrir o link do artigo.
+
+Extração de conteúdo HTML (parágrafos <p>).
+
+Concatenação do texto em um único campo.
+
+Geração de resumo usando o modelo gpt-4o-mini da OpenAI:
+
+5 tópicos objetivos em português.
+
+Envio por e-mail usando Gmail com:
+
+Assunto: "Aqui está resumo do link: {link}"
+
+Corpo: resumo gerado
+
+Atualização no Google Sheets marcando Status como "Resumo já enviado".
+
+📋 Pré-requisitos
+Conta no Google Sheets e planilha configurada com colunas:
+
+Link do Artigo
+
+Email
+
+Status
+
+Conta no Gmail com OAuth2 configurado no n8n.
+
+Credenciais da OpenAI API (ou acesso ao modelo pelo n8n).
+
+Instância do n8n rodando (local ou em nuvem).
+
+⚙️ Estrutura dos nós principais
+Schedule Trigger → Executa a cada 10 minutos.
+
+Google Sheets (Get row(s)) → Busca linhas da planilha.
+
+If → Filtra linhas sem Status.
+
+HTTP Request → Acessa o link do artigo.
+
+HTML → Extrai texto dos parágrafos.
+
+Set (Edit Fields) → Junta o texto extraído.
+
+OpenAI (Message a model) → Gera resumo.
+
+Gmail (Send a message) → Envia resumo por e-mail.
+
+Google Sheets (Update row) → Atualiza status.
+
+🧠 Observações
+O seletor CSS "p" na etapa HTML pega todos os parágrafos; ajuste caso precise de partes específicas do artigo.
+
+O modelo gpt-4o-mini gera respostas rápidas e econômicas; você pode trocar por outro modelo mais detalhado.
+
+O envio de e-mail é texto simples; pode ser adaptado para HTML se quiser formatação.
+
+Certifique-se de que o campo Email está correto na planilha para evitar falhas no envio.
+
+📎 Exemplo de uso
+Planilha inicial:
+
+Link do Artigo	Email	Status
+https://meusite.com/artigo1	teste@email.com	
+https://meusite.com/artigo2	outro@email.com	
+
+Após execução, a coluna Status será preenchida:
+
+Link do Artigo	Email	Status
+https://meusite.com/artigo1	teste@email.com	Resumo já enviado
+https://meusite.com/artigo2	outro@email.com	Resumo já enviado
