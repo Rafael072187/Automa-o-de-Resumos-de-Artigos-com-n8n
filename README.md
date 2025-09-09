@@ -1,6 +1,7 @@
 📄 Automação de Resumos de Artigos com n8n
 
 🚀 O que o fluxo faz
+
 Disparo agendado a cada 10 minutos (Schedule Trigger).
 
 Leitura de linhas do Google Sheets contendo:
@@ -15,7 +16,7 @@ Verificação de status — só processa se o campo Status estiver vazio.
 
 Requisição HTTP para abrir o link do artigo.
 
-Extração de conteúdo HTML (parágrafos <p>).
+Extração de conteúdo HTML (parágrafos).
 
 Concatenação do texto em um único campo.
 
@@ -31,7 +32,10 @@ Corpo: resumo gerado
 
 Atualização no Google Sheets marcando Status como "Resumo já enviado".
 
+----------------------------------------------------------------------------------------------------------------
+
 📋 Pré-requisitos
+
 Conta no Google Sheets e planilha configurada com colunas:
 
 Link do Artigo
@@ -46,7 +50,10 @@ Credenciais da OpenAI API (ou acesso ao modelo pelo n8n).
 
 Instância do n8n rodando (local ou em nuvem).
 
+----------------------------------------------------------------------------------------------------------------
+
 ⚙️ Estrutura dos nós principais
+
 Schedule Trigger → Executa a cada 10 minutos.
 
 Google Sheets (Get row(s)) → Busca linhas da planilha.
@@ -65,7 +72,10 @@ Gmail (Send a message) → Envia resumo por e-mail.
 
 Google Sheets (Update row) → Atualiza status.
 
+----------------------------------------------------------------------------------------------------------------
+
 🧠 Observações
+
 O seletor CSS "p" na etapa HTML pega todos os parágrafos; ajuste caso precise de partes específicas do artigo.
 
 O modelo gpt-4o-mini gera respostas rápidas e econômicas; você pode trocar por outro modelo mais detalhado.
@@ -74,15 +84,21 @@ O envio de e-mail é texto simples; pode ser adaptado para HTML se quiser format
 
 Certifique-se de que o campo Email está correto na planilha para evitar falhas no envio.
 
+----------------------------------------------------------------------------------------------------------------
+
 📎 Exemplo de uso
+
 Planilha inicial:
 
-Link do Artigo	Email	Status
+Link do Artigo	Email	Status:
 https://meusite.com/artigo1	teste@email.com	
+
 https://meusite.com/artigo2	outro@email.com	
 
 Após execução, a coluna Status será preenchida:
 
 Link do Artigo	Email	Status
+
 https://meusite.com/artigo1	teste@email.com	Resumo já enviado
+
 https://meusite.com/artigo2	outro@email.com	Resumo já enviado
